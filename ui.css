@@ -1,0 +1,132 @@
+/* میز ۸ — سیستم طراحی «چراغ میز»
+   ایده: شب، یک میز، یک چراغ. فقط جلسهٔ مطالعه زیر نور است؛ بقیهٔ صفحه آرام و ساده می‌ماند.
+   این فایل آخرین لایه است و فقط ظاهر را عوض می‌کند؛ JS و ساختار صفحه دست‌نخورده‌اند. */
+
+:root{
+  color-scheme:dark;
+  --ui-bg:#13111a; --ui-bg2:#191622; --ui-surface:#1f1b2b; --ui-raised:#292436; --ui-field:#16131e;
+  --ui-line:rgba(246,238,227,.09); --ui-line2:rgba(246,238,227,.18);
+  --ui-text:#f6eee3; --ui-muted:#bcb2c8; --ui-faint:#8e8499;
+  --ui-lamp:#ffb36b; --ui-lamp-ink:#2a1706; --ui-dusk:#b9a6ff; --ui-moss:#92d6ab; --ui-danger:#ff9aa6;
+  --r-chip:999px; --r-ctl:14px; --r-panel:20px; --r-hero:28px; --ease:cubic-bezier(.2,.7,.2,1);
+  /* متغیرهای قدیمی به پالت تازه وصل می‌شوند تا همهٔ صفحه‌ها یکدست شوند */
+  --bg:var(--ui-bg); --panel:var(--ui-surface); --text:var(--ui-text); --ink:var(--ui-text);
+  --muted:var(--ui-muted); --accent:var(--ui-lamp); --lilac:var(--ui-dusk); --line:var(--ui-line);
+  --surface:var(--ui-surface); --surface-raised:var(--ui-raised); --field:var(--ui-field); --radius:var(--r-panel);
+  --shadow:none;
+}
+
+/* ── پایه ── */
+html{background:var(--ui-bg);scrollbar-width:thin;scrollbar-color:rgba(246,238,227,.22) transparent}
+body{background:var(--ui-bg);color:var(--ui-text);font-family:Vazir,Vazirmatn,system-ui,sans-serif;line-height:1.9;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body [hidden]{display:none!important}
+body ::selection{background:rgba(255,179,107,.32)}
+body :focus-visible{outline:2px solid var(--ui-lamp);outline-offset:3px}
+body .skip-link:focus{background:var(--ui-lamp);color:var(--ui-lamp-ink);border-radius:var(--r-ctl);padding:.6rem 1rem;font-weight:700}
+
+/* ── ناوبری ── */
+body .app-rail{background:var(--ui-bg2);border-inline-end:1px solid var(--ui-line)}
+body .rail-label{color:var(--ui-faint);font-size:.8125rem;font-weight:500}
+body .nav-item{position:relative;min-height:46px;border:0;border-radius:var(--r-ctl);background:transparent;color:var(--ui-muted);font-weight:500;transition:background .2s var(--ease),color .2s}
+body .nav-item:hover{background:rgba(246,238,227,.06);color:var(--ui-text)}
+body .nav-item.active,body .nav-item[aria-current]{background:rgba(255,179,107,.1);color:var(--ui-text);font-weight:700}
+body .nav-item.active::before,body .nav-item[aria-current]::before{content:"";position:absolute;inset-block:10px;inset-inline-start:0;width:3px;border-radius:3px;background:var(--ui-lamp)}
+body .nav-item.active svg,body .nav-item[aria-current] svg{color:var(--ui-lamp);stroke:var(--ui-lamp)}
+body .rail-note,body .rail-account{background:var(--ui-surface);border:1px solid var(--ui-line);border-radius:var(--r-panel)}
+body .rail-account:hover{border-color:var(--ui-line2)}
+body .rail-avatar,body .topbar-avatar{background:var(--ui-lamp);color:var(--ui-lamp-ink);font-weight:800}
+body .app-topbar{background:rgba(19,17,26,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--ui-line)}
+body .app-location{color:var(--ui-faint)}
+body .app-location strong{color:var(--ui-text);font-weight:700}
+body .quick-launch{min-height:44px;border-radius:var(--r-chip);background:var(--ui-surface);border:1px solid var(--ui-line2);color:var(--ui-muted)}
+body .quick-launch:hover{border-color:var(--ui-lamp);color:var(--ui-text)}
+body kbd{font:600 .72rem/1 system-ui,sans-serif;padding:.3rem .45rem;border-radius:8px;background:var(--ui-raised);border:1px solid var(--ui-line2);color:var(--ui-muted)}
+
+/* ── عنوان صفحه: وزن، نه رنگ، جمله را دو لحن می‌کند ── */
+body .page-heading h1{font-size:clamp(1.9rem,1.2rem + 3vw,3rem);font-weight:800;line-height:1.35;color:var(--ui-text);text-wrap:balance}
+body .page-heading h1 span{color:var(--ui-muted);font-weight:500;background:none;-webkit-text-fill-color:currentColor}
+body .page-heading p{color:var(--ui-muted);max-width:52ch;font-size:1.0625rem}
+body .eyebrow{color:var(--ui-faint);font-size:.875rem;font-weight:500}
+
+/* ── سطح‌ها: هر نقش، شعاع و عمق خودش را دارد ── */
+body .card,body .ranking-card{background:var(--ui-surface);border:1px solid var(--ui-line);border-radius:var(--r-panel);box-shadow:none}
+body .card-heading h2{font-size:1.0625rem;font-weight:800}
+body .small-label{color:var(--ui-faint);font-size:.875rem}
+body .local-tag{color:var(--ui-moss);background:rgba(146,214,171,.1);border-radius:var(--r-chip);padding:.15rem .75rem;font-size:.8125rem}
+/* آمار روزانه مثل دفتر حساب: بدون جعبه، فقط یک خط بالا */
+body .stat-card{background:transparent;border:0;border-top:1px solid var(--ui-line2);border-radius:0;box-shadow:none;padding:1rem .25rem .25rem}
+body .stat-card p{color:var(--ui-muted);font-size:.9375rem;margin:0}
+body .stat-value{font-size:clamp(1.75rem,1.2rem + 1.8vw,2.4rem);font-weight:800;line-height:1.25}
+body .stat-value small{font-size:.875rem;font-weight:500;color:var(--ui-muted)}
+body .stat-caption{color:var(--ui-faint);font-size:.875rem}
+body .stat-icon{border-radius:var(--r-ctl)}
+body .stat-icon.warm{background:rgba(255,179,107,.14);color:var(--ui-lamp)}
+body .stat-icon.sage{background:rgba(146,214,171,.13);color:var(--ui-moss)}
+body .stat-icon.lilac{background:rgba(185,166,255,.14);color:var(--ui-dusk)}
+body .mini-progress{height:8px;border-radius:var(--r-chip);background:rgba(246,238,227,.09);overflow:hidden}
+body #goalBar{background:var(--ui-lamp);border-radius:inherit;transition:width .6s var(--ease)}
+body .privacy-note{background:transparent;border:0;border-top:1px solid var(--ui-line);border-radius:0;box-shadow:none;padding-top:1rem}
+body .privacy-note strong{color:var(--ui-moss)}
+body .camera-view{border-radius:var(--r-ctl);overflow:hidden;background:var(--ui-field);border:1px solid var(--ui-line)}
+
+/* ── میز مطالعه: تنها جای زیر نور چراغ ── */
+body .session-card{position:relative;isolation:isolate;border-radius:var(--r-hero);background:var(--ui-surface);border:1px solid rgba(255,179,107,.2);padding:clamp(1.25rem,3vw,2rem)}
+body .session-card::before{content:"";position:absolute;inset:0 0 auto 0;height:65%;z-index:-1;pointer-events:none;border-radius:inherit;background:radial-gradient(ellipse 60% 100% at 50% 0,rgba(255,179,107,.17),transparent);opacity:.5;transition:opacity 1.4s var(--ease)}
+body .session-card:has(#startButton[hidden])::before{opacity:1}
+body .camera-choice{background:var(--ui-field);border:1px solid var(--ui-line);border-radius:var(--r-ctl);padding:.85rem 1rem}
+body .subject-pills{display:flex;flex-wrap:wrap;gap:.6rem}
+body .subject-pills button{min-height:44px;padding:.5rem 1.1rem;border-radius:var(--r-chip);background:var(--ui-field);border:1px solid var(--ui-line2);color:var(--ui-muted);font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+body .subject-pills button:hover{color:var(--ui-text);border-color:var(--ui-lamp)}
+body .subject-pills .chosen,body .subject-pills [aria-pressed="true"]{background:var(--ui-lamp);border-color:var(--ui-lamp);color:var(--ui-lamp-ink);font-weight:700}
+body .timer{font-weight:800;font-variant-numeric:tabular-nums;color:var(--ui-text);text-shadow:0 0 44px rgba(255,179,107,.28)}
+body .timer>span{color:var(--ui-lamp)}
+body .timer-caption{color:var(--ui-muted);font-weight:500}
+body .status-pill{background:rgba(246,238,227,.06);border:1px solid var(--ui-line);border-radius:var(--r-chip);color:var(--ui-muted);padding:.35rem 1rem}
+
+/* ── کنترل‌ها ── */
+body .primary-button{min-height:48px;padding:.65rem 1.5rem;border:0;border-radius:var(--r-ctl);background:var(--ui-lamp);color:var(--ui-lamp-ink);font-weight:800;box-shadow:0 8px 28px -8px rgba(255,179,107,.5);cursor:pointer;transition:filter .2s,transform .12s}
+body .primary-button svg{stroke:currentColor}
+body .primary-button:hover{filter:brightness(1.07)}
+body .primary-button:active{transform:scale(.98)}
+body .primary-button:disabled{opacity:.45;box-shadow:none;cursor:not-allowed}
+body .start-button{min-height:58px;font-size:1.125rem;border-radius:18px}
+body .secondary-button,body .quiet-button{min-height:46px;padding:.55rem 1.2rem;border-radius:var(--r-ctl);background:transparent;border:1px solid var(--ui-line2);color:var(--ui-text);font-weight:500;cursor:pointer;transition:background .2s,border-color .2s}
+body .secondary-button:hover,body .quiet-button:hover{background:rgba(246,238,227,.07);border-color:rgba(255,179,107,.55)}
+body .text-button{min-height:40px;background:none;border:0;color:var(--ui-lamp);font-weight:700;cursor:pointer}
+body .text-button:hover{text-decoration:underline;text-underline-offset:6px}
+body .finish-button{min-height:48px;border-radius:var(--r-ctl);background:rgba(255,154,166,.12);border:1px solid rgba(255,154,166,.42);color:var(--ui-danger);font-weight:700;cursor:pointer}
+body input:not([type=checkbox]):not([type=radio]):not([type=range]),body textarea,body select{background:var(--ui-field);color:var(--ui-text);border:1px solid var(--ui-line2);border-radius:var(--r-ctl);min-height:46px;padding:.6rem .9rem;font:inherit;transition:border-color .2s,box-shadow .2s}
+body textarea{min-height:110px;resize:vertical}
+body input:focus,body textarea:focus,body select:focus{border-color:var(--ui-lamp);box-shadow:0 0 0 4px rgba(255,179,107,.16);outline:none}
+body ::placeholder{color:var(--ui-faint)}
+body input[type=checkbox],body input[type=range]{accent-color:var(--ui-lamp)}
+body .form-field{color:var(--ui-muted);font-weight:500}
+body .ranking-tabs,body .period-tabs{display:inline-flex;flex-wrap:wrap;gap:.25rem;padding:.3rem;background:var(--ui-field);border:1px solid var(--ui-line);border-radius:var(--r-panel)}
+body .ranking-tabs button,body .period-tabs button{min-height:42px;padding:.4rem 1rem;border:0;border-radius:var(--r-ctl);background:transparent;color:var(--ui-muted);font-weight:500;cursor:pointer;transition:background .2s,color .2s}
+body .ranking-tabs button[aria-pressed=true],body .period-tabs button[aria-pressed=true]{background:var(--ui-raised);color:var(--ui-text);font-weight:700}
+body .period-arrow{width:44px;height:44px;border-radius:50%;background:var(--ui-field);border:1px solid var(--ui-line2);color:var(--ui-text)}
+
+/* ── پنجره‌ها ── */
+body dialog{background:var(--ui-raised);color:var(--ui-text);border:1px solid var(--ui-line2);border-radius:var(--r-hero);box-shadow:0 30px 80px -24px rgba(0,0,0,.85);padding:clamp(1.1rem,3vw,1.6rem)}
+body dialog::backdrop{background:rgba(8,6,14,.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+body dialog[open]{animation:ui-pop .26s var(--ease)}
+body .dialog-top h2{font-size:1.2rem;font-weight:800}
+body .dialog-copy{color:var(--ui-muted)}
+body .icon-button{width:40px;height:40px;border-radius:50%;background:rgba(246,238,227,.07);border:1px solid var(--ui-line);color:var(--ui-text);cursor:pointer}
+body .icon-button:hover{background:rgba(246,238,227,.14)}
+body .toast{background:var(--ui-raised);border:1px solid var(--ui-line2);border-radius:var(--r-ctl);color:var(--ui-text)}
+body .focus-sheet{background:rgba(31,27,43,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--ui-line2)}
+body .focus-tool{background:rgba(31,27,43,.74);border:1px solid var(--ui-line2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ui-text)}
+
+/* ── حرکت: فقط پاسخ به کنش کاربر ── */
+@keyframes ui-pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){body *,body *::before,body *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* ── موبایل ── */
+@media (max-width:640px){
+  body .page-heading{flex-direction:column;align-items:stretch;gap:1rem}
+  body .page-heading>.primary-button,body .page-heading>.quiet-button{width:100%;justify-content:center}
+  body .session-actions{display:grid;gap:.6rem}
+  body .session-actions>*{width:100%;justify-content:center}
+  body .session-card{border-radius:24px}
+}

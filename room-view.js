@@ -1,0 +1,13 @@
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const roomClock=ms=>{const seconds=Math.floor(Math.max(0,Number(ms)||0)/1000);return [Math.floor(seconds/3600),Math.floor(seconds/60)%60,seconds%60].map(n=>String(n).padStart(2,'0')).join(':')};
+
+// Remote times are confirmed server snapshots. Never invent study time between
+// heartbeats: another person's presence can change at any moment.
+export function roomView(snapshot,ownMs=0){
+ const all=(snapshot?.members||[]).map(m=>({...m,isSelf:!!m.isSelf,dailyMs:m.dailyMs===undefined?undefined:Math.max(0,Number(m.dailyMs)||0)+(m.isSelf?Math.max(0,ownMs-(Number(m.activeMs)||0)):0),totalMs:Math.max(0,Number(m.totalMs)||0)+(m.isSelf?Math.max(0,ownMs-(Number(m.activeMs)||0)):0),online:!!m.online,studying:!!m.online&&!!m.studying,activeMs:m.isSelf?Math.max(0,Number(ownMs)||0):Math.max(0,Number(m.activeMs)||0)}));
+ const online=all.filter(m=>m.online).sort((a,b)=>Number(b.isSelf)-Number(a.isSelf)||a.name.localeCompare(b.name,'fa'));
+ return {online,offline:all.filter(m=>!m.online),studying:online.filter(m=>m.studying).length,dailyTotalMs:online.reduce((sum,m)=>sum+(m.dailyMs??m.activeMs),0),totalMs:online.reduce((sum,m)=>sum+m.activeMs,0)};
+}
+export function memberCardsHTML(members,{admin=false,compact=false}={}){
+ return members.map(m=>`<article class="companion-card ${m.isSelf?'is-self':''} ${m.studying?'is-studying':''} ${!m.online?'is-offline':''} ${compact?'is-compact':''}"><div class="companion-person"><span class="companion-avatar" aria-hidden="true">${esc(m.name.slice(0,1))}</span><div><strong>${esc(m.name)}</strong><span class="companion-tags">${m.isSelf?'<b>خودت</b>':''}${m.isOwner?'<b>مدیر</b>':''}<span class="companion-status">${!m.online?'خارج از اتاق':m.background?'ادامه با اجازهٔ مدیر':m.studying?'در حال مطالعه':'استراحت'}</span></span></div></div><div class="companion-clock"><output dir="ltr" aria-label="زمان مطالعهٔ ${esc(m.name)}" ${m.isSelf?'data-own-room-time':''}>${m.dailyMs===undefined?(m.online?roomClock(m.activeMs):'—'):roomClock(m.dailyMs)}</output><small>${m.dailyMs!==undefined?'مطالعهٔ امروز در این گروه':m.online?(m.mode==='background'?'زمان بیرون صفحه':m.mode==='camera'?'دوربینی · این حضور':'بدون دوربین · این حضور'):'خارج از اتاق'}<span class="companion-total">مجموع اتاق <b dir="ltr">${roomClock(m.totalMs)}</b></span></small></div>${admin&&!m.isSelf?`<button class="kick-member" data-group-action="kick" data-user="${esc(m.userId)}" data-name="${esc(m.name)}" aria-label="اخراج ${esc(m.name)}"><svg><use href="#i-remove-user"/></svg></button>`:''}</article>`).join('');
+}

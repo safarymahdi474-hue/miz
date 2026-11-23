@@ -1,0 +1,18 @@
+MediaPipe Tasks Vision 0.10.21
+Copyright Google LLC. Licensed under the Apache License, Version 2.0.
+https://github.com/google-ai-edge/mediapipe
+https://www.apache.org/licenses/LICENSE-2.0
+
+MediaPipe Pose Landmarker Lite, float16, version 1
+Copyright Google LLC. Apache License, Version 2.0.
+https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker
+
+Vazirmatn v33.003
+Copyright 2015-2022 The Vazirmatn Project Authors (https://github.com/rastikerdar/vazirmatn).
+Licensed under the SIL Open Font License, Version 1.1.
+https://openfontlicense.org/open-font-license-official-text/
+
+TensorFlow.js 4.22.0, WASM backend, PoseNet 2.2.2 and MobileNetV1 PoseNet weights
+Copyright Google LLC / TensorFlow Authors. Apache License, Version 2.0.
+https://github.com/tensorflow/tfjs
+https://github.com/tensorflow/tfjs-models/tree/master/posenet
