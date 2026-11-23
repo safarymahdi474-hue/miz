@@ -1,0 +1,21 @@
+server {
+ listen 443 ssl;
+ server_name example.com;
+ root /var/www/miz;
+ index index.php;
+ # ssl_certificate ...;
+ # ssl_certificate_key ...;
+ client_max_body_size 2m;
+ location ~* ^/(app|storage|database|docs|tests)(/|$) { deny all; }
+ location ~ /\. { deny all; }
+ location ~* \.(sql|sqlite|sqlite3|db|log|ini|bak|env|md|py|sha256)(-[a-z]+)?$ { deny all; }
+ location / { try_files $uri $uri/ =404; }
+ location ~ \.php$ {
+  try_files $uri =404;
+  include fastcgi_params;
+  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+ }
+ location ~* \.wasm$ { default_type application/wasm; }
+ location ~* \.mjs$ { default_type text/javascript; }
+}
